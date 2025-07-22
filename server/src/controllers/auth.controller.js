@@ -43,6 +43,40 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
+const refresh = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  const user = await UserService.validateRefreshToken(refreshToken);
+
+  const accessToken = TokenService.generateAccessToken(user._id);
+
+  res.status(200).json({
+    success: true,
+    message: "Token refreshed successfully",
+    data: { accessToken },
+  });
+});
+
+const getProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.userId;
+
+  const user = await UserService.findUserById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const userResponse = UserService.formatUserResponse(user);
+
+  res.status(200).json({
+    success: true,
+    message: "Profile retrieved successfully",
+    data: { user: userResponse },
+  });
+});
+
 const logout = asyncHandler(async (req, res) => {
   TokenService.clearTokenCookies(res);
 
@@ -52,4 +86,4 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-export const UserController = { signup, login, logout };
+export const UserController = { signup, login, getProfile, refresh, logout };
