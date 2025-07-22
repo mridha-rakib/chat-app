@@ -13,7 +13,7 @@ export const userGeneric = z.object({
     .max(20, "Username must not exceed 20 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
     .transform((val) => val.toLowerCase()),
-
+  email: z.email("Please enter a valid email address"),
   password: z
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -35,6 +35,7 @@ export const signupSchema = z.object({
     .pick({
       fullName: true,
       username: true,
+      email: true,
       password: true,
       confirmPassword: true,
       gender: true,
@@ -44,4 +45,14 @@ export const signupSchema = z.object({
       path: ["confirmPassword"],
     })
     .transform(({ confirmPassword, ...rest }) => rest),
+});
+
+export const loginSchema = z.object({
+  body: userGeneric.pick({ username: true, password: true }),
+});
+
+export const refreshTokenSchema = z.object({
+  cookies: z.object({
+    refreshToken: z.string().min(1, "Refresh token is required"),
+  }),
 });
