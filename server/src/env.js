@@ -11,6 +11,8 @@ const env = createEnv({
     PORT: z.coerce.number().default(8000),
     BASE_PATH: z.string().default("/api/v1"),
     CORS_ORIGIN: z.string().default("http://localhost:3000"),
+    ACCESS_TOKEN_SECRET: z.string(),
+    REFRESH_TOKEN_SECRET: z.string(),
     CLOUDINARY_CLOUD_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_API_SECRET: z.string(),

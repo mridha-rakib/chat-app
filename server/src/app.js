@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import { pinoLogger } from "#app/middlewares/pino-logger";
 import env from "#app/env";
 import rootRouter from "#app/routes/index.route";
+import { errorHandler } from "#app/middlewares/error-handler.middleware";
 
 const app = express();
 
@@ -32,5 +33,7 @@ app.use((req, res) => {
     ],
   });
 });
+
+app.use(errorHandler);
 
 export default app;
