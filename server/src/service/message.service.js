@@ -24,6 +24,24 @@ class MessageService {
       );
     }
   }
+
+  async createMessage(messageData) {
+    try {
+      const { senderId, receiverId, message } = messageData;
+
+      const newMessage = new Message({
+        senderId,
+        receiverId,
+        message,
+      });
+
+      return newMessage;
+    } catch (error) {
+      throw new BadRequestException("Failed to create message", ErrorCodeEnum.DATABASE_ERROR);
+    }
+  }
+
+  
 }
 
 export default new MessageService();
