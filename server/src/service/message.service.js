@@ -41,7 +41,43 @@ class MessageService {
     }
   }
 
-  
+  async saveMessageAndConversation(conversation, message) {
+    try {
+      conversation.messages.push(message._id);
+      await Promise.all([conversation.save(), message.save()]);
+
+      return message;
+    } catch (error) {
+      throw new BadRequestException("Failed to save message", ErrorCodeEnum.DATABASE_ERROR);
+    }
+  }
+
+  async getConversationMessages(senderId, userToChatId) {
+    try {
+      const conversation = await Conversation.findOne({
+        participants: { $all: [senderId, userToChatId] },
+      }).populate("messages");
+
+      if (!conversation) {
+        return [];
+      }
+
+      return conversation.messages;
+    } catch (error) {
+      throw new BadRequestException("Failed to retrieve messages", ErrorCodeEnum.DATABASE_ERROR);
+    }
+  }
+
+  formatMessageResponse(message) {
+    return {
+      _id: message._id,
+      senderId: message.senderId,
+      receiverId: message.receiverId,
+      message: message.message,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+    };
+  }
 }
 
 export default new MessageService();
