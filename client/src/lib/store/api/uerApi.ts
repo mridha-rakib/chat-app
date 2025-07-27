@@ -15,7 +15,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     signup: builder.mutation<AuthResponse, SignupRequest>({
       query: (userData) => ({
-        url: "/signup",
+        url: "/auth/signup",
         method: "POST",
         body: userData,
       }),
@@ -30,14 +30,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
           );
         } catch (error) {
           console.error("Signup failed:", error);
-          dispatch(logout());
         }
       },
     }),
 
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         body: credentials,
       }),
@@ -51,39 +50,21 @@ export const userApiSlice = apiSlice.injectEndpoints({
             })
           );
         } catch (error) {
-          // Error is handled by the component
+          console.error("Login failed:", error);
         }
       },
     }),
 
     // Get profile query
     getProfile: builder.query<ProfileResponse, void>({
-      query: () => "/profile",
+      query: () => "/auth/profile",
       providesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
-        try {
-          const { data } = await queryFulfilled;
-          const state = getState() as RootState;
-
-          // Update user data if token exists
-          if (state.auth.token) {
-            dispatch(
-              setCredentials({
-                user: data.data.user,
-                token: state.auth.token,
-              })
-            );
-          }
-        } catch (error) {
-          // Error is handled by the component
-        }
-      },
     }),
 
     // Refresh token mutation
     refreshToken: builder.mutation<RefreshResponse, void>({
       query: () => ({
-        url: "/refresh",
+        url: "/auth/refresh",
         method: "POST",
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
@@ -91,6 +72,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           const { data } = await queryFulfilled;
           dispatch(updateToken(data.data.accessToken));
         } catch (error) {
+          console.log(error);
           dispatch(logout());
         }
       },
@@ -99,14 +81,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
     // Logout mutation
     logout: builder.mutation<{ success: boolean; message: string }, void>({
       query: () => ({
-        url: "/logout",
+        url: "/auth/logout",
         method: "POST",
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
         } catch (error) {
-          // Even if logout fails on server, clear client state
+          console.error("Logout failed:", error);
         } finally {
           dispatch(logout());
         }
