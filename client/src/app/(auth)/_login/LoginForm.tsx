@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import { useTransition } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
+import { useLoginMutation } from "@/lib/store/api/uerApi";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -24,6 +28,11 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,7 +41,36 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {};
+  const onSubmit = (data: LoginFormData) => {
+    startTransition(async () => {
+      try {
+        await login(data).unwrap();
+        toast.success("Login successful! Redirecting...", {
+          duration: 3000,
+          position: "top-center",
+        });
+        router.push("/home");
+      } catch (error) {
+        console.error("Signup error:", error);
+
+        let errorMessage = "Something went wrong. Please try again.";
+
+        if (error && typeof error === "object" && "data" in error) {
+          const errorWithData = error as { data?: { message?: string } };
+          errorMessage = errorWithData.data?.message || errorMessage;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        }
+
+        toast.error(errorMessage, {
+          duration: 4000,
+          position: "top-center",
+        });
+      }
+    });
+  };
 
   return (
     <Form {...form}>
@@ -58,7 +96,8 @@ const LoginForm = () => {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="King_R007"
+                        placeholder="Enter your username"
+                        disabled={isLoggingIn || isPending}
                         className="!h-[48px]"
                         {...field}
                       />
@@ -80,7 +119,8 @@ const LoginForm = () => {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Hello$007"
+                        placeholder="Enter your password"
+                        disabled={isLoggingIn || isPending}
                         className="!h-[48px]"
                         {...field}
                       />
@@ -90,8 +130,12 @@ const LoginForm = () => {
                 )}
               />
             </div>
-            <Button type="submit" className="w-full">
-              {/* {isPending && <Loader className="animate-spin" />} */}
+            <Button
+              type="submit"
+              disabled={isLoggingIn || isPending}
+              className="w-full h-12"
+            >
+              {(isPending || isLoggingIn) && <Loader className="animate-spin" />}
               Login
             </Button>
           </div>

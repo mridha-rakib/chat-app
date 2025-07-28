@@ -1,33 +1,48 @@
-import { Server, Socket } from "socket.io";
-import http from "http";
-import app from "#app/app";
+import { Server } from "socket.io";
+import env from "#app/env";
 
-const server = http.createServer(app);
+let io;
+const userSocketMap = {};
 
-const io = new Server(server, {
-  cors: {
-    origin: [env.CORS_ORIGIN || "*"],
-    credentials: true,
-  },
-});
+export const initializeSocket = (server) => {
+  io = new Server(server, {
+    cors: {
+      origin: env.CORS_ORIGIN || "*",
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    console.log("a user connected", socket.id);
+
+    const userId = socket.handshake.query.userId;
+    if (userId && userId !== "undefined") {
+      userSocketMap[userId] = socket.id;
+    }
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    socket.on("disconnect", () => {
+      console.log("user disconnected", socket.id);
+      if (userId && userId !== "undefined") {
+        delete userSocketMap[userId];
+      }
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    });
+
+    socket.on("error", (error) => {
+      console.error("Socket error:", error);
+    });
+  });
+
+  return io;
+};
+
+export const getIO = () => {
+  if (!io) throw new BadRequestException("Socket.io not initialized");
+  return io;
+};
 
 export const getReceiverSocketId = (receiverId) => {
   return userSocketMap[receiverId];
 };
-
-const userSocketMap = {};
-
-io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
-
-  const userId = socket.handshake.query.userId;
-  if (userId != "undefined") userSocketMap[userId] = socket.id;
-
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected", socket.id);
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
-  });
-});

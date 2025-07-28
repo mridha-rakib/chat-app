@@ -7,4 +7,4 @@ const message_router = Router();
 message_router.post("/send/:id", protectRoute, MessageController.sendMessage);
 message_router.get("/:id", protectRoute, MessageController.getMessages);
 
-export default router;
+export default message_router;
