@@ -1,4 +1,5 @@
 import {
+  AllUsers,
   AuthResponse,
   LoginRequest,
   ProfileResponse,
@@ -7,9 +8,6 @@ import {
 } from "@/types/auth.types";
 import { apiSlice } from "./apiSlice";
 import { setCredentials, logout, updateToken } from "../slices/authSlice";
-import { RootState } from "../index";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -61,6 +59,15 @@ export const userApiSlice = apiSlice.injectEndpoints({
       providesTags: ["User"],
     }),
 
+    // get all users
+    getAllUsers: builder.query<AllUsers, void>({
+      query: () => "/auth/all-users",
+      providesTags: ["User"],
+      transformErrorResponse: (response) => {
+        return response.data;
+      },
+    }),
+
     // Refresh token mutation
     refreshToken: builder.mutation<RefreshResponse, void>({
       query: () => ({
@@ -101,6 +108,7 @@ export const {
   useSignupMutation,
   useLoginMutation,
   useGetProfileQuery,
+  useGetAllUsersQuery,
   useRefreshTokenMutation,
   useLogoutMutation,
 } = userApiSlice;

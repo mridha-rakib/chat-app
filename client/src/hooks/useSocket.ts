@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io, { Socket } from "socket.io-client";
 
@@ -22,24 +22,47 @@ import { Message } from "@/types/conversation.type";
 export const useSocket = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
-  const socket = useSelector(selectSocket);
   const selectedConversation = useSelector(selectSelectedConversation);
+  const socket = useSelector(selectSocket);
+
+  const socketRef = useRef<Socket | null>(null);
+
+  const handleNewMessage = useCallback(
+    (message: Message) => {
+      dispatch(addMessage(message));
+    },
+    [dispatch]
+  );
+
+  const handleOnlineUsers = useCallback(
+    (users: string[]) => {
+      dispatch(setOnlineUsers(users));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
-    if (currentUser && !socket) {
+    // Don't create socket if one already exists
+    if (currentUser && !socketRef.current) {
       const newSocket: Socket = io(
-        process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8080/api/v1",
+        process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8080",
         {
           query: {
             userId: currentUser._id,
           },
           transports: ["websocket"],
+          reconnection: true,
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
         }
       );
+
+      socketRef.current = newSocket;
       dispatch(setSocket(newSocket));
 
+      // Connection handlers
       newSocket.on("connect", () => {
-        console.log("connected to server");
+        console.log("Connected to server");
         dispatch(setConnectionStatus(true));
         dispatch(setConnectionError(null));
       });
@@ -55,31 +78,34 @@ export const useSocket = () => {
         dispatch(setConnectionStatus(false));
       });
 
-      // Listen for online users
-      newSocket.on("getOnlineUsers", (users: string[]) => {
-        dispatch(setOnlineUsers(users));
-      });
-
-      newSocket.on("newMessage", (message: Message) => {
-        if (
-          selectedConversation &&
-          (message.senderId === selectedConversation._id ||
-            message.receiverId === selectedConversation._id)
-        ) {
-          dispatch(addMessage(message));
-        }
-      });
+      // Event listeners
+      newSocket.on("getOnlineUsers", handleOnlineUsers);
+      newSocket.on("newMessage", handleNewMessage);
 
       return () => {
-        newSocket.close();
-        dispatch(clearSocket());
+        if (socketRef.current) {
+          socketRef.current.off("getOnlineUsers", handleOnlineUsers);
+          socketRef.current.off("newMessage", handleNewMessage);
+          socketRef.current.close();
+          socketRef.current = null;
+          dispatch(clearSocket());
+        }
       };
-    } else if (!currentUser && socket) {
-      // User logged out, close socket
-      socket.close();
+    }
+
+    // Clean up socket if user logs out
+    if (!currentUser && socketRef.current) {
+      socketRef.current.close();
+      socketRef.current = null;
       dispatch(clearSocket());
     }
-  }, [currentUser, dispatch, socket, selectedConversation]);
+  }, [
+    currentUser?._id,
+    dispatch,
+    currentUser,
+    handleNewMessage,
+    handleOnlineUsers,
+  ]); // Only depend on stable values
 
-  return socket;
+  return socketRef.current;
 };

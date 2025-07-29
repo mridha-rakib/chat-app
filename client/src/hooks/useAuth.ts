@@ -3,8 +3,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/lib/store";
 import { logout as logoutAction } from "@/lib/store/slices/authSlice";
-import { useGetProfileQuery, useLogoutMutation } from "@/lib/store/api/uerApi";
-import { useEffect } from "react";
+import { useGetProfileQuery, useLogoutMutation } from "@/lib/store/api/userApi";
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +26,7 @@ export const useAuth = () => {
     try {
       await logoutMutation().unwrap();
     } catch (error) {
+      console.log("User hook: ", error);
       dispatch(logoutAction());
     }
   };

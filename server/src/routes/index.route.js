@@ -1,7 +1,6 @@
 import { Router } from "express";
 import auth_router from "#app/routes/auth.route";
 import message_router from "#app/routes/message.route";
-import path from "path";
 
 const rootRouter = Router();
 

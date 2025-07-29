@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 import env from "#app/env";
+import { BadRequestException } from "#app/utils/error-handler.utils";
+import { logger } from "#app/middlewares/pino-logger";
 
 let io;
 const userSocketMap = {};
@@ -13,7 +15,7 @@ export const initializeSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("a user connected", socket.id);
+    logger.info("a user connected", socket.id);
 
     const userId = socket.handshake.query.userId;
     if (userId && userId !== "undefined") {
@@ -23,7 +25,7 @@ export const initializeSocket = (server) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     socket.on("disconnect", () => {
-      console.log("user disconnected", socket.id);
+      logger.warn("user disconnected", socket.id);
       if (userId && userId !== "undefined") {
         delete userSocketMap[userId];
       }
@@ -31,7 +33,7 @@ export const initializeSocket = (server) => {
     });
 
     socket.on("error", (error) => {
-      console.error("Socket error:", error);
+      logger.error("Socket error:", error);
     });
   });
 

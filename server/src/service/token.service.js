@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 class TokenService {
   generateAccessToken(userId) {
-    return jwt.sign({ userId }, env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+    return jwt.sign({ userId }, env.ACCESS_TOKEN_SECRET, { expiresIn: "1hr" });
   }
 
   generateRefreshToken(userId) {

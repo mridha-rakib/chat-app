@@ -1,9 +1,19 @@
 import { z } from "zod";
 import mongoose from "mongoose";
 
-const objectIdSchema = z
-  .string()
-  .refine((val) => mongoose.Types.ObjectId(val), { error: "Invalid ObjectId format" });
+const objectIdSchema = z.string().refine(
+  (val) => {
+    try {
+      return mongoose.Types.ObjectId.isValid(val); // ✅ Use isValid() instead of constructor
+    } catch {
+      return false;
+    }
+  },
+  {
+    message: "Invalid ObjectId format",
+  }
+);
+
 
 export const sendMessageSchema = z.object({
   body: z.object({

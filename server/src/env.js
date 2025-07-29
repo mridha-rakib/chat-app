@@ -13,9 +13,6 @@ const env = createEnv({
     CORS_ORIGIN: z.string().default("http://localhost:3000"),
     ACCESS_TOKEN_SECRET: z.string(),
     REFRESH_TOKEN_SECRET: z.string(),
-    CLOUDINARY_CLOUD_NAME: z.string(),
-    CLOUDINARY_API_KEY: z.string(),
-    CLOUDINARY_API_SECRET: z.string(),
     LOG_LEVEL: z
       .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
       .default("info"),

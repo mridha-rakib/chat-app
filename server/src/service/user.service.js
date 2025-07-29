@@ -1,9 +1,12 @@
 import User from "#app/models/user.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { email } from "zod";
 
 class UserService {
+  async findUsers() {
+    return await User.find();
+  }
+
   async findUserByUsername(username) {
     return await User.findOne({ username }).lean();
   }

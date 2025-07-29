@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useRef } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { User, AtSign, Mail, Lock } from "lucide-react";
-import { useSignupMutation } from "@/lib/store/api/uerApi";
+import { useSignupMutation } from "@/lib/store/api/userApi";
 import { useRouter } from "next/navigation";
 
 export const signUpSchema = z

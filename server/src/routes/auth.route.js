@@ -8,6 +8,7 @@ auth_router.post("/signup", UserController.signup);
 auth_router.post("/login", UserController.login);
 auth_router.get("/refresh", UserController.refresh);
 auth_router.get("/profile", protectRoute, UserController.getProfile);
+auth_router.get("/all-users", protectRoute, UserController.getAllUsers);
 auth_router.post("/logout", protectRoute, UserController.logout);
 
 export default auth_router;

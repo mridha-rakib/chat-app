@@ -4,14 +4,8 @@ import type {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
-import { setCredentials, logout, updateToken } from "../slices/authSlice";
-import {
-  SignupRequest,
-  LoginRequest,
-  AuthResponse,
-  RefreshResponse,
-  ProfileResponse,
-} from "@/types/auth.types";
+import { logout, updateToken } from "../slices/authSlice";
+import { RefreshResponse } from "@/types/auth.types";
 import type { RootState } from "@/lib/store/index";
 
 const baseQuery = fetchBaseQuery({
@@ -58,6 +52,6 @@ const baseQueryWithReauth: BaseQueryFn<
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Conversations"],
+  tagTypes: ["User", "Conversations", "Messages"],
   endpoints: (builder) => ({}),
 });

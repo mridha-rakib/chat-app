@@ -22,21 +22,25 @@ interface MessageResponse {
 export const messageApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     sendMessage: builder.mutation<MessageResponse, SendMessageRequest>({
-      query: ({ receiverId, message }) => ({
-        url: `/messages/send/${receiverId}`,
-        method: "POST",
-        body: { message },
-      }),
+      query: ({ receiverId: id, message }) => {
+        console.log("🔥 API Query:", { id, message });
+        return {
+          url: `/messages/send/${id}`,
+          method: "POST",
+          body: { message },
+        };
+      },
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         dispatch(setSendingMessage(true));
         try {
           const { data } = await queryFulfilled;
+          console.log("✅ Message API Response:", data);
           if (data.success && !Array.isArray(data.data)) {
             dispatch(addMessage(data.data));
           }
         } catch (error) {
-          dispatch(setError("Failed to send message"));
           console.error("Send message failed:", error);
+          dispatch(setError("Failed to send message"));
         } finally {
           dispatch(setSendingMessage(false));
         }

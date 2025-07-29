@@ -77,6 +77,18 @@ const getProfile = asyncHandler(async (req, res) => {
   });
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await UserService.findUsers();
+
+  const usersResponse = users.map((user) => UserService.formatUserResponse(user));
+
+  res.status(200).json({
+    success: true,
+    message: "Users data retrieved successfully",
+    data: { users: usersResponse },
+  });
+});
+
 const logout = asyncHandler(async (req, res) => {
   TokenService.clearTokenCookies(res);
 
@@ -86,4 +98,4 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-export const UserController = { signup, login, getProfile, refresh, logout };
+export const UserController = { signup, login, getProfile, getAllUsers, refresh, logout };

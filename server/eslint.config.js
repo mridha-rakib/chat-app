@@ -1,6 +1,4 @@
 import js from "@eslint/js";
-import typescript from "@typescript-eslint/eslint-plugin";
-import typescriptParser from "@typescript-eslint/parser";
 import prettier from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
@@ -17,7 +15,6 @@ export default [
         console: "readonly",
         process: "readonly",
       },
-      parser: typescriptParser,
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: "module",
@@ -66,16 +63,13 @@ export default [
     },
     settings: {
       "import/resolver": {
-        typescript: {
-          project: "./tsconfig.json",
+        javascript: {
+          project: "./jsconfig.json",
         },
         node: {
-          extensions: [".js", ".jsx", ".ts", ".tsx"],
+          extensions: [".js", ".jsx"],
         },
       },
     },
-  },
-  {
-    ignores: ["node_modules/**", "dist/**", "build/**", "*.js", "*.cjs", "*.mjs", "coverage/**"],
   },
 ];

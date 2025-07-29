@@ -1,14 +1,25 @@
+import { HTTPSTATUS } from "#app/config/http.config";
 import { asyncHandler } from "#app/middlewares/async-handler.middleware";
-import { sendMessageSchema } from "#app/schemas/message.schema";
+import { logger } from "#app/middlewares/pino-logger";
+import { getMessagesSchema, sendMessageSchema } from "#app/schemas/message.schema";
 import MessageService from "#app/service/message.service";
 import { getReceiverSocketId, getIO } from "#app/socket/socket";
+import { zParse } from "#app/utils/validators.utils";
 
 const sendMessage = asyncHandler(async (req, res) => {
+  console.log("📨 Send Message Request:", {
+    body: req.body,
+    params: req.params,
+    userId: req.user?.userId,
+    url: req.url,
+  });
   const { body, params } = await zParse(sendMessageSchema, req);
 
   const { message } = body;
   const { id: receiverId } = params;
   const senderId = req.user.userId;
+
+  logger.info("ID's : ", senderId, receiverId);
 
   const conversation = await MessageService.findOrCreateConversation(senderId, receiverId);
 

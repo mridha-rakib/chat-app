@@ -53,3 +53,11 @@ export interface ProfileResponse {
     user: User;
   };
 }
+
+export interface AllUsers {
+  success: boolean;
+  message: string;
+  data: {
+    users: User[];
+  };
+}

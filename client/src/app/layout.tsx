@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/lib/store/store-provider";
 import { Toaster } from "sonner";
-
+import { SocketProvider } from "@/components/providers/SocketProvider";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,7 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <StoreProvider>
-          {children} <Toaster richColors closeButton />
+          
+              {children} <Toaster richColors closeButton />
+            
         </StoreProvider>
       </body>
     </html>

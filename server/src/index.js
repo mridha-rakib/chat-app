@@ -11,11 +11,11 @@ import { initializeSocket } from "#app/socket/socket";
   const server = http.createServer(app);
   initializeSocket(server);
 
-  app.listen(env.PORT, () => {
+  server.listen(env.PORT, () => {
     logger.info(`Server running on port ${env.PORT}`);
   });
 
-  app.on("error", (error) => {
+  server.on("error", (error) => {
     logger.error(`❌ Server error: ${error}`);
   });
 

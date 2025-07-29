@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { useLoginMutation } from "@/lib/store/api/uerApi";
+import { useLoginMutation } from "@/lib/store/api/userApi";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 
@@ -44,14 +44,18 @@ const LoginForm = () => {
   const onSubmit = (data: LoginFormData) => {
     startTransition(async () => {
       try {
-        await login(data).unwrap();
+        const result = await login(data).unwrap();
+
         toast.success("Login successful! Redirecting...", {
           duration: 3000,
           position: "top-center",
         });
-        router.push("/home");
+
+        setTimeout(() => {
+          router.push("/home");
+        }, 1000);
       } catch (error) {
-        console.error("Signup error:", error);
+        console.error("SigIn error:", error);
 
         let errorMessage = "Something went wrong. Please try again.";
 
@@ -135,7 +139,9 @@ const LoginForm = () => {
               disabled={isLoggingIn || isPending}
               className="w-full h-12"
             >
-              {(isPending || isLoggingIn) && <Loader className="animate-spin" />}
+              {(isPending || isLoggingIn) && (
+                <Loader className="animate-spin" />
+              )}
               Login
             </Button>
           </div>
