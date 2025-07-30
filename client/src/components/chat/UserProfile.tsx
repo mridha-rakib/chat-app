@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/dialog";
 import { User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLogoutMutation } from "@/lib/store/api/userApi";
 
 export function UserProfile() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+
+  const [logoutApi] = useLogoutMutation();
 
   const handleLogout = async () => {
-    await logout();
+    await logoutApi().unwrap();
     setIsProfileOpen(false);
   };
 

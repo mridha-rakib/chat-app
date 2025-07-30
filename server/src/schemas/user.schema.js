@@ -44,6 +44,7 @@ export const signupSchema = z.object({
       message: "Passwords do not match",
       path: ["confirmPassword"],
     })
+    // eslint-disable-next-line no-unused-vars
     .transform(({ confirmPassword, ...rest }) => rest),
 });
 

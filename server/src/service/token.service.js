@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 class TokenService {
   generateAccessToken(userId) {
-    return jwt.sign({ userId }, env.ACCESS_TOKEN_SECRET, { expiresIn: "1hr" });
+    return jwt.sign({ userId }, env.ACCESS_TOKEN_SECRET, { expiresIn: "5m" });
   }
 
   generateRefreshToken(userId) {
@@ -18,7 +18,7 @@ class TokenService {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
     });
 
     return { accessToken, refreshToken };

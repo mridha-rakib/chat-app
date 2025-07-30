@@ -1,7 +1,5 @@
 import Message from "#app/models/message.model";
 import Conversation from "#app/models/conversation.model";
-import { NotFoundException, BadRequestException } from "#app/utils/error-handler.utils";
-import { ErrorCodeEnum } from "#app/enums/error-code.enum";
 
 class MessageService {
   async findOrCreateConversation(senderId, receiverId) {
@@ -18,10 +16,7 @@ class MessageService {
 
       return conversation;
     } catch (error) {
-      throw new BadRequestException(
-        "Failed to create or find conversation",
-        ErrorCodeEnum.DATABASE_ERROR
-      );
+      throw new error();
     }
   }
 
@@ -37,7 +32,7 @@ class MessageService {
 
       return newMessage;
     } catch (error) {
-      throw new BadRequestException("Failed to create message", ErrorCodeEnum.DATABASE_ERROR);
+      throw new error();
     }
   }
 
@@ -48,7 +43,7 @@ class MessageService {
 
       return message;
     } catch (error) {
-      throw new BadRequestException("Failed to save message", ErrorCodeEnum.DATABASE_ERROR);
+      throw new error();
     }
   }
 
@@ -64,7 +59,7 @@ class MessageService {
 
       return conversation.messages;
     } catch (error) {
-      throw new BadRequestException("Failed to retrieve messages", ErrorCodeEnum.DATABASE_ERROR);
+      throw new error();
     }
   }
 

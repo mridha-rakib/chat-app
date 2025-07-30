@@ -32,9 +32,6 @@ export default function MainLayout({
     );
   }
 
-  if (!isAuthenticated) {
-    return null;
-  }
   return (
     <div className="h-screen overflow-hidden">
       <NuqsAdapter>

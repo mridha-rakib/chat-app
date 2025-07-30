@@ -22,8 +22,8 @@ import { Message } from "@/types/conversation.type";
 export const useSocket = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
-  const selectedConversation = useSelector(selectSelectedConversation);
-  const socket = useSelector(selectSocket);
+  // const selectedConversation = useSelector(selectSelectedConversation);
+  // const socket = useSelector(selectSocket);
 
   const socketRef = useRef<Socket | null>(null);
 

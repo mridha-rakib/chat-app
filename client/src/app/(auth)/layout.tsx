@@ -14,7 +14,7 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      router.push("/");
+      router.push("/home");
     }
   }, [isAuthenticated, loading, router]);
 
@@ -27,10 +27,6 @@ export default function AuthLayout({
         </div>
       </div>
     );
-  }
-
-  if (isAuthenticated) {
-    return router.push("/home");
   }
 
   return (

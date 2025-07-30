@@ -1,3 +1,4 @@
+import env from "#app/env";
 import User from "#app/models/user.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -55,8 +56,9 @@ class UserService {
 
     await newUser.save();
 
-    const { password: _, ...userWithoutPassword } = newUser.toObject();
-    return userWithoutPassword;
+    const userObj = newUser.toObject();
+    delete userObj.password;
+    return userObj;
   }
 
   async authenticateUser({ username, password }) {
@@ -71,15 +73,17 @@ class UserService {
       throw new Error("Invalid credentials");
     }
 
-    const { password: _, ...userWithoutPassword } = user.toObject();
-    return userWithoutPassword;
+    const userObj = user.toObject();
+    delete userObj.password;
+    return userObj;
   }
 
   async validateRefreshToken(token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, env.REFRESH_TOKEN_SECRET);
 
       return await this.findUserById(decoded.userId);
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       throw new Error("Invalid or expired refresh token");
     }

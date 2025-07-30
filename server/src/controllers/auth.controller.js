@@ -46,8 +46,14 @@ const login = asyncHandler(async (req, res) => {
 const refresh = asyncHandler(async (req, res) => {
   const { refreshToken } = req.cookies;
 
-  const user = await UserService.validateRefreshToken(refreshToken);
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token not found",
+    });
+  }
 
+  const user = await UserService.validateRefreshToken(refreshToken);
   const accessToken = TokenService.generateAccessToken(user._id);
 
   res.status(200).json({

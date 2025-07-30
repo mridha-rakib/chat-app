@@ -21,9 +21,11 @@ export function ChatArea() {
   const isOnline = onlineUsers.includes(selectedConversation._id);
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-screen overflow-hidden">
       <ChatHeader conversation={selectedConversation} isOnline={isOnline} />
-      <MessagesList messages={messages} isLoading={messageLoading} />
+      <div className="flex-1 overflow-hidden">
+        <MessagesList messages={messages} isLoading={messageLoading} />
+      </div>
       <MessageInput />
     </div>
   );
